@@ -26,3 +26,13 @@ app.use((error: Error, _request: Request, response: Response, _next: NextFunctio
 
 const port = Number(process.env.PORT) || 3001;
 app.listen(port, () => console.log(`Channel service listening on port ${port}`));
+
+// Self-ping every 14 minutes to prevent Render spin-down
+setInterval(async () => {
+  try {
+    await fetch(`https://xeno-zara-studio.onrender.com/health`);
+    console.log("[keepalive] pinged health endpoint");
+  } catch (e) {
+    console.error("[keepalive] ping failed");
+  }
+}, 14 * 60 * 1000);

@@ -4,7 +4,13 @@ import { prisma } from "@/lib/db";
 
 export type ReceiptEvent = { messageId: string; event: "sent" | "delivered" | "opened" | "clicked" | "failed"; timestamp: string };
 const url = process.env.REDIS_URL;
-const connection = url ? new IORedis(url, { maxRetriesPerRequest: null }) : null;
+// const connection = url ? new IORedis(url, { maxRetriesPerRequest: null }) : null;
+const connection = new IORedis(process.env.REDIS_URL!, {
+  maxRetriesPerRequest: null,
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
 const bullConnection = connection as unknown as ConnectionOptions;
 
 interface ReceiptQueue {

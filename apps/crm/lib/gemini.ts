@@ -4,7 +4,7 @@ import type { FilterRule } from "@/lib/db";
 function model() {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("GEMINI_API_KEY is not configured");
-  return new GoogleGenerativeAI(key).getGenerativeModel({ model: "gemini-1.5-flash" });
+  return new GoogleGenerativeAI(key).getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 }
 
 async function generate(systemInstruction: string, prompt: string) {

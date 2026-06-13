@@ -7,7 +7,7 @@ import { Badge, Button, Card } from "@/components/ui";
 interface SegmentOption { id: string; name: string; matchCount: number }
 export function CampaignBuilder({ segments }: { segments: SegmentOption[] }) {
   const router = useRouter();
-  const [step, setStep] = useState(1); const [segmentId, setSegmentId] = useState(segments[0]?.id ?? ""); const [channel, setChannel] = useState("whatsapp"); const [body, setBody] = useState(""); const [name, setName] = useState(""); const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1); const [segmentId, setSegmentId] = useState(segments[0]?.id ?? ""); const [channel, setChannel] = useState("whatsapp"); const [body, setBody] = useState<string>(""); const [name, setName] = useState(""); const [loading, setLoading] = useState(false);
   const segment = segments.find((item) => item.id === segmentId);
   // async function generate() { setLoading(true); const data = await fetch("/api/ai/copy", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ segmentId, channel }) }).then((r) => r.json()) as { copy: string }; setBody(data.copy); setLoading(false); }
   const generate = async () => {

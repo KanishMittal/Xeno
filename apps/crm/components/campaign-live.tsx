@@ -13,7 +13,21 @@ export function CampaignLive({ initial }: { initial: CampaignData }) {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (campaign.status !== "running") return;
-    const timer = setInterval(() => { void fetch(`/api/campaigns/${campaign.id}`).then((r) => r.json()).then((data: CampaignData) => setCampaign(data)); }, 5000);
+    const timer = setInterval(() => {
+      void fetch(`/api/campaigns/${campaign.id}/stats`)
+        .then((r) => r.json())
+        .then((data: { delivered: number; failed: number; opened: number; clicked: number; totalSent: number; status: string }) => {
+          setCampaign((prev) => ({
+            ...prev,
+            delivered: data.delivered,
+            failed: data.failed,
+            opened: data.opened,
+            clicked: data.clicked,
+            totalSent: data.totalSent,
+            status: data.status,
+          }));
+        });
+    }, 5000);
     return () => clearInterval(timer);
   }, [campaign.id, campaign.status]);
   async function generateInsights() { setLoading(true); const data = await fetch("/api/ai/insights", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ campaignId: campaign.id }) }).then((r) => r.json()) as { insights: string }; setInsights(data.insights); setLoading(false); }

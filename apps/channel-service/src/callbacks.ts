@@ -10,16 +10,17 @@ export async function fireCallback(messageId: string, event: DeliveryEvent) {
   }
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
+      console.log(`[callback] firing ${event} for ${messageId} to ${url}`);
       const response = await fetch(url, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ messageId, event, timestamp: new Date().toISOString() }),
       });
       if (!response.ok) throw new Error(`CRM returned ${response.status}`);
-      console.log(`[${messageId}] callback delivered: ${event}`);
+      console.log(`[callback] ${event} for ${messageId} → 200 OK`);
       return;
     } catch (error) {
-      console.error(`[${messageId}] callback attempt ${attempt + 1} failed: ${event}`, error);
+      console.error(`[callback] FAILED ${event} for ${messageId}:`, error instanceof Error ? error.message : String(error));
       if (attempt < 2) await sleep(1000 * 2 ** attempt);
     }
   }

@@ -1,15 +1,21 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { FilterRule } from "@/lib/db";
 
-function model() {
+function getModel(name: string) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("GEMINI_API_KEY is not configured");
-  return new GoogleGenerativeAI(key).getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+  return new GoogleGenerativeAI(key).getGenerativeModel({ model: name });
 }
 
 async function generate(systemInstruction: string, prompt: string) {
-  const result = await model().generateContent(`${systemInstruction}\n\nUser input:\n${prompt}`);
-  return result.response.text().trim();
+  try {
+    const result = await getModel("gemini-2.5-flash-lite").generateContent(`${systemInstruction}\n\nUser input:\n${prompt}`);
+    return result.response.text().trim();
+  } catch (error) {
+    console.warn("gemini-2.5-flash-lite failed, trying fallback gemini-2.5-flash-lite", error);
+    const result = await getModel("gemini-2.5-flash-lite").generateContent(`${systemInstruction}\n\nUser input:\n${prompt}`);
+    return result.response.text().trim();
+  }
 }
 
 export async function nlToSegmentFilter(query: string): Promise<FilterRule> {

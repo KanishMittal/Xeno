@@ -1,0 +1,15 @@
+{
+  "name": "xeno-crm",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter crm dev\" \"pnpm --filter channel-service dev\"",
+    "db:push": "pnpm --filter crm exec prisma db push",
+    "db:seed": "pnpm --filter crm exec prisma db seed",
+    "db:studio": "pnpm --filter crm exec prisma studio",
+    "build": "pnpm --filter crm build && pnpm --filter channel-service build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

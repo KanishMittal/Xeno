@@ -1,0 +1,14 @@
+CREATE TABLE "Customer" ("id" TEXT PRIMARY KEY, "name" TEXT NOT NULL, "phone" TEXT NOT NULL UNIQUE, "email" TEXT NOT NULL UNIQUE, "city" TEXT NOT NULL, "gender" TEXT NOT NULL, "ageGroup" TEXT NOT NULL, "totalSpend" DOUBLE PRECISION NOT NULL DEFAULT 0, "orderCount" INTEGER NOT NULL DEFAULT 0, "lastOrderAt" TIMESTAMP(3), "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE INDEX "Customer_city_idx" ON "Customer"("city");
+CREATE INDEX "Customer_lastOrderAt_idx" ON "Customer"("lastOrderAt");
+CREATE INDEX "Customer_totalSpend_idx" ON "Customer"("totalSpend");
+CREATE TABLE "Order" ("id" TEXT PRIMARY KEY, "customerId" TEXT NOT NULL REFERENCES "Customer"("id"), "amount" DOUBLE PRECISION NOT NULL, "category" TEXT NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE INDEX "Order_customerId_idx" ON "Order"("customerId");
+CREATE INDEX "Order_category_idx" ON "Order"("category");
+CREATE TABLE "Segment" ("id" TEXT PRIMARY KEY, "name" TEXT NOT NULL, "description" TEXT, "filterRule" JSONB NOT NULL, "nlQuery" TEXT, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE "Campaign" ("id" TEXT PRIMARY KEY, "name" TEXT NOT NULL, "segmentId" TEXT NOT NULL REFERENCES "Segment"("id"), "messageBody" TEXT NOT NULL, "channel" TEXT NOT NULL DEFAULT 'whatsapp', "status" TEXT NOT NULL DEFAULT 'draft', "totalSent" INTEGER NOT NULL DEFAULT 0, "delivered" INTEGER NOT NULL DEFAULT 0, "failed" INTEGER NOT NULL DEFAULT 0, "opened" INTEGER NOT NULL DEFAULT 0, "clicked" INTEGER NOT NULL DEFAULT 0, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "launchedAt" TIMESTAMP(3), "completedAt" TIMESTAMP(3));
+CREATE INDEX "Campaign_segmentId_idx" ON "Campaign"("segmentId");
+CREATE INDEX "Campaign_createdAt_idx" ON "Campaign"("createdAt");
+CREATE TABLE "CampaignMessage" ("id" TEXT PRIMARY KEY, "campaignId" TEXT NOT NULL REFERENCES "Campaign"("id"), "customerId" TEXT NOT NULL REFERENCES "Customer"("id"), "channel" TEXT NOT NULL, "body" TEXT NOT NULL, "status" TEXT NOT NULL DEFAULT 'queued', "sentAt" TIMESTAMP(3), "deliveredAt" TIMESTAMP(3), "openedAt" TIMESTAMP(3), "clickedAt" TIMESTAMP(3), "updatedAt" TIMESTAMP(3) NOT NULL);
+CREATE UNIQUE INDEX "CampaignMessage_campaignId_customerId_key" ON "CampaignMessage"("campaignId", "customerId");
+CREATE INDEX "CampaignMessage_campaignId_status_idx" ON "CampaignMessage"("campaignId", "status");

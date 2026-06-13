@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { @apply border-border; }
+body { @apply bg-background text-zinc-100 antialiased; }
+input, textarea, select { @apply bg-zinc-950 border-zinc-700 rounded-lg focus:border-rose-500 focus:ring-rose-500; }
+button { @apply transition-colors; }

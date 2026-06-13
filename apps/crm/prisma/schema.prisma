@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id          String    @id @default(cuid())
+  name        String
+  phone       String    @unique
+  email       String    @unique
+  city        String
+  gender      String
+  ageGroup    String
+  totalSpend  Float     @default(0)
+  orderCount  Int       @default(0)
+  lastOrderAt DateTime?
+  createdAt   DateTime  @default(now())
+  orders      Order[]
+  messages    CampaignMessage[]
+
+  @@index([city])
+  @@index([lastOrderAt])
+  @@index([totalSpend])
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  customerId String
+  amount     Float
+  category   String
+  createdAt  DateTime @default(now())
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@index([category])
+}
+
+model Segment {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  filterRule  Json
+  nlQuery     String?
+  createdAt   DateTime   @default(now())
+  campaigns   Campaign[]
+}
+
+model Campaign {
+  id           String    @id @default(cuid())
+  name         String
+  segmentId    String
+  messageBody  String
+  channel      String    @default("whatsapp")
+  status       String    @default("draft")
+  totalSent    Int       @default(0)
+  delivered    Int       @default(0)
+  failed       Int       @default(0)
+  opened       Int       @default(0)
+  clicked      Int       @default(0)
+  createdAt    DateTime  @default(now())
+  launchedAt   DateTime?
+  completedAt  DateTime?
+  segment      Segment   @relation(fields: [segmentId], references: [id])
+  messages     CampaignMessage[]
+
+  @@index([segmentId])
+  @@index([createdAt])
+}
+
+model CampaignMessage {
+  id           String    @id @default(cuid())
+  campaignId   String
+  customerId   String
+  channel      String
+  body         String
+  status       String    @default("queued")
+  sentAt       DateTime?
+  deliveredAt  DateTime?
+  openedAt     DateTime?
+  clickedAt    DateTime?
+  updatedAt    DateTime  @updatedAt
+  campaign     Campaign  @relation(fields: [campaignId], references: [id])
+  customer     Customer  @relation(fields: [customerId], references: [id])
+
+  @@unique([campaignId, customerId])
+  @@index([campaignId, status])
+}

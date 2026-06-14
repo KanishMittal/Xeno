@@ -8,7 +8,7 @@ Zara Studio CRM is a production-ready demo for intelligent fashion retail outrea
 Marketer
    |
    v
-Next.js CRM (Vercel) -----> Gemini 1.5 Flash
+Next.js CRM (Vercel) -----> Gemini 2.5 Flash Lite
    |        |
    |        +-----> BullMQ receipt queue -----> Worker
    |                         |                    |
